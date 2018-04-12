@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
 
-MongoClient.connect('mongodb://resFilterUser:km890889@kyle-murphy.co.uk:27017/', (err,
+MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     client) => {
 
 	if (err) 
@@ -17,11 +17,16 @@ MongoClient.connect('mongodb://resFilterUser:km890889@kyle-murphy.co.uk:27017/',
 
     app.set('view engine', 'ejs');
 
+	app.get("/api", (req, res) => {
+
+	res.send("<html><body>hello world</body></html>");
+});
+
     app.get('/', (req, res) => {
+
     	db.collection('filters').find().toArray((err, result) => {
     			if (err) return console.log(err);
-    			res.send(result);
-    			//res.render('index.ejs', {quotes: result});
+    			res.render('index.ejs', {quotes: result});
     		})
     });
 
@@ -37,6 +42,6 @@ MongoClient.connect('mongodb://resFilterUser:km890889@kyle-murphy.co.uk:27017/',
     	})
     });
 
-    app.listen(3300, () => console.log('Example app listening on port 3300!'));
+    app.listen(3330, () => console.log('Example app listening on port 3330!'));
 
 });
