@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
+const cors = require('cors');
 
 MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     client) => {
@@ -10,6 +11,8 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 		return console.log(err);
 
 	db = client.db('reseteraFilters');
+
+    app.use(cors());
 
     app.use(bodyParser.urlencoded({
         extended: true
