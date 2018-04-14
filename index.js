@@ -12,23 +12,13 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
 	db = client.db('reseteraFilters');
 
-    var corsOptions = {
-        origin: true,
-        optionsSuccessStatus: 200,
-        methods: ["GET","PUT","POST","OPTIONS"],
-        allowedHeaders: ['Content-Type']
-    };
+    app.use(cors())
 
     app.use(bodyParser.urlencoded({
         extended: true
     }));
 
     app.set('view engine', 'ejs');
-
-	app.get("/api", (req, res) => {
-
-	res.send("<html><body>hello world</body></html>");
-});
 
     app.get('/', (req, res) => {
 
@@ -38,15 +28,13 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     		})
     });
 
-    app.options('/filters', cors(corsOptions))
-    app.post('/filters', cors(corsOptions), (req, res) => {
+    app.post('/filters', (req, res) => {
 
     	db.collection('filters').save(req.body, (err,
     		result) => {
     		if (err) return console.log(err)
 
     		console.log("saved to database")
-    	res.redirect('/')
     	})
     });
 
