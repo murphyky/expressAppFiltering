@@ -16,8 +16,6 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
     app.use(cors())
 
-    app.use(bodyParser.json());
-
     /*
     app.use(bodyParser.urlencoded({
         extended: true
