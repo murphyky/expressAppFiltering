@@ -34,8 +34,9 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     		result) => {
     		if (err) return console.log(err)
 
-    		console.log("saved to database")
-    	})
+    		console.log("saved to database");
+            res.send("Saved successfully", {res: result})
+    	});
     });
 
     app.listen(3330, () => console.log('Example app listening on port 3330!'));
