@@ -39,7 +39,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
         console.log("saved this to mongo",req.body, typeof req.body);
 
         var data = {
-            _id: uuid(req.body.username||null, NAMESPACE),
+            _id: uuid(req.body.user||null, NAMESPACE),
             filters: req.body
         };
         console.log("data", data)
