@@ -3,6 +3,8 @@ const bodyParser = require('body-parser')
 const app = express();
 const MongoClient = require('mongodb').MongoClient;
 const cors = require('cors');
+const uuid = require('uuid/v5');
+const NAMESPACE = "9f264d74-96cd-46e3-9547-9618fc3ac247";
 
 MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     client) => {
@@ -29,6 +31,12 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     });
 
     app.post('/filters', (req, res) => {
+        console.log("saved this to mongo", req.body);
+
+        var data = {
+            _id: uuid(req.body.username||null, NAMESPACE),
+            filters: req.body
+        };
 
     	db.collection('filters').save(req.body, (err,
     		result) => {
