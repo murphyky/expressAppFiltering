@@ -43,7 +43,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
             filters: req.body
         };
         console.log("data", data)
-    	db.collection('filters').save(req.body, (err,
+    	db.collection('filters').save(data, (err,
     		result) => {
     		if (err) {
                 res.status(500).end({message:"Error occurred",err:err});
