@@ -32,12 +32,13 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
     	db.collection('filters').save(req.body, (err,
     		result) => {
-    		if (err) res.status(500).end({message:"Error occurred",err:err});
-            res.status(200).send({message: "Saved successfully", result: result})
-            });
+    		if (err) {
+                res.status(500).end({message:"Error occurred",err:err});
+            } else {
+                res.status(200).send({message: "Saved successfully", result: result})
+            }
 
-//            res.send("Saved successfully", {res: result})
-    	});
+            });
     });
 
     app.listen(3330, () => console.log('Example app listening on port 3330!'));
