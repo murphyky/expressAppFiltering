@@ -35,7 +35,8 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     		if (err) return console.log(err)
 
     		console.log("saved to database");
-            res.send("Saved successfully", {res: result})
+            res.status(200).send({message: "Saved successfully", result: result})
+//            res.send("Saved successfully", {res: result})
     	});
     });
 
