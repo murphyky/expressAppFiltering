@@ -22,7 +22,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
     app.get('/', (req, res) => {
 
-    	db.collection('filters').find().toArray((err, result) => {
+    	db.collection('testingdebug').find().toArray((err, result) => {
     			if (err) return console.log(err);
     			res.render('index.ejs', {quotes: result});
     		})
@@ -30,14 +30,14 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
     app.post('/filters', (req, res) => {
 
-    	db.collection('filters').save(req.body, (err,
+    	db.collection('testingdebug').save(req.body, (err,
     		result) => {
     		if (err) return console.log(err)
 
     		console.log("saved to database", db, req);
             res.status(200).send({message: "Saved successfully", result: result})
             //test successful entry
-            db.collection('filters').find().toArray((err, result) => {
+            db.collection('testingdebug').find().toArray((err, result) => {
                 if (err) return console.log(err);
                 console.log(result);
             });
