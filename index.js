@@ -12,7 +12,12 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
 	db = client.db('reseteraFilters');
 
-    app.use(cors());
+    var corsOptions = {
+        origin: true,
+        optionsSuccessStatus: 200,
+        methods: ["GET","PUT","POST","OPTIONS"],
+        allowedHeaders: ['Content-Type']
+    };
 
     app.use(bodyParser.urlencoded({
         extended: true
@@ -33,8 +38,8 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     		})
     });
 
-
-    app.post('/filters', (req, res) => {
+    app.options('/filters', cors(corsOptions))
+    app.post('/filters', cors(corsOptions), (req, res) => {
 
     	db.collection('filters').save(req.body, (err,
     		result) => {
