@@ -31,7 +31,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     });
 
     app.post('/filters', (req, res) => {
-        console.log("saved this to mongo", req.body);
+        console.log("saved this to mongo",req, req.body);
 
         var data = {
             _id: uuid(req.body.username||null, NAMESPACE),
