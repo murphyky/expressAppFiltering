@@ -37,7 +37,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
             _id: uuid(req.body.username||null, NAMESPACE),
             filters: req.body
         };
-
+        console.log("data", data)
     	db.collection('filters').save(req.body, (err,
     		result) => {
     		if (err) {
