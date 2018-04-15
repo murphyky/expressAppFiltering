@@ -48,7 +48,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
             if (err) {
                 return errCallback(res, err);
             } else {
-
+                console.log("Payload", req.body);
                 req.body.blockList = req.body.blockList || "[]";
                 var joinedFilters = lodash.union(data.filters, JSON.parse(req.body.blockList));
 
@@ -57,6 +57,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
                     filters: joinedFilters,
                     username: req.body.user
                 };
+                console.log("merged payload", data);
                 //merge data object before saving
                 updateFilters((err, data) => {
                     if (err) {
