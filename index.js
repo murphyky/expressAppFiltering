@@ -79,7 +79,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
     function getFilters(cb) {
         //get filters
-        db.collection('filters').toArray((err, data) => {
+        db.collection('filters').find().toArray((err, data) => {
             cb(err, data);
         });
     }
