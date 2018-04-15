@@ -88,7 +88,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
     function getFilters(id, cb) {
         //get filters
-        db.collection('filters').find({_id: id}).toArray((err, data) => {
+        db.collection('filters').findOne({_id: id}).toArray((err, data) => {
             console.log("Getting latest filter collection...", data)
             cb(err, data);
         });
