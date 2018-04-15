@@ -54,8 +54,10 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
             } else {
 
                 data.filters = data.filters || [];
-                console.log("Payload", req.body);
+
                 req.body.blockList = req.body.blockList || "[]";
+
+                console.log("payload filters", JSON.parse(req.body.blockList), "old filters", data.filters)
                 var joinedFilters = lodash.union(data.filters, JSON.parse(req.body.blockList));
 
                 var mergedPayload = {
