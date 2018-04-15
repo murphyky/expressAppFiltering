@@ -31,9 +31,11 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
             data: data});
     }
 
-    app.get('/filters', (req, res) => {
+    app.get('/filters/:username', (req, res) => {
 
-        getFilters((err, data) => {
+        var id = uuid(req.params.username, NAMESPACE);
+
+        getFilters(id, (err, data) => {
             if (err) {
                 return errCallback(res, err);
             } else {
@@ -44,7 +46,9 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
     app.post('/filters', (req, res) => {
 
-        getFilters((err, data) => {
+        var id = uuid(req.body.user||null, NAMESPACE);
+
+        getFilters(id, (err, data) => {
             if (err) {
                 return errCallback(res, err);
             } else {
@@ -55,7 +59,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
                 var joinedFilters = lodash.union(data.filters, JSON.parse(req.body.blockList));
 
                 var mergedPayload = {
-                    _id: uuid(req.body.user||null, NAMESPACE),
+                    _id: id,
                     filters: joinedFilters,
                     username: req.body.user
                 };
@@ -76,13 +80,13 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
         console.log("Updating filters...", data);
         db.collection('filters').save(data, (err, result) => {
             //get latest state in case concurrent update happening elsewhere
-            return getFilters(cb);
+            return getFilters(data._id, cb);
         });
     }
 
-    function getFilters(cb) {
+    function getFilters(id, cb) {
         //get filters
-        db.collection('filters').find().toArray((err, data) => {
+        db.collection('filters').find({_id: id}).toArray((err, data) => {
             console.log("Getting latest filter collection...", data)
             cb(err, data);
         });
