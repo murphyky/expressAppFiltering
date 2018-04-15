@@ -57,7 +57,13 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
                 req.body.blockList = req.body.blockList || "[]";
 
-                console.log("payload filters", JSON.parse(req.body.blockList), "old filters", data.filters)
+                if (req.body.scheduleToDelete) {
+                    var scheduleToDelete = JSON.parse(req.body.scheduleToDelete);
+                    data.filters = _.filter(data.filters, function(item) {
+                        return scheduleToDelete.indexOf(item) === -1;
+                    });
+                }
+
                 var joinedFilters = lodash.union(data.filters, JSON.parse(req.body.blockList));
 
                 var mergedPayload = {
@@ -65,7 +71,6 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
                     filters: joinedFilters,
                     username: req.body.user
                 };
-                console.log("merged payload", mergedPayload);
                 //merge data object before saving
                 updateFilters((err, resolvedData) => {
                     if (err) {
