@@ -5,6 +5,7 @@ const MongoClient = require('mongodb').MongoClient;
 const cors = require('cors');
 const uuid = require('uuid/v5');
 const NAMESPACE = "9f264d74-96cd-46e3-9547-9618fc3ac247";
+const lodash = require('lodash');
 
 MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     client) => {
@@ -20,39 +21,68 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
         type: "application/json"
     }))
 
-    /*
-    app.use(bodyParser.urlencoded({
-        extended: true
-    }));*/
 
-    app.set('view engine', 'ejs');
+    function errCallback(res, err) {
+        return res.status(500).end({message: "Error occurred", err: err});
+    }
 
-    app.get('/', (req, res) => {
+    function successCallback(res, data) {
+        return res.status(200).send({message: "Saved successfully",
+            data: data});
+    }
 
-    	db.collection('filters').find().toArray((err, result) => {
-    			if (err) return console.log(err);
-    			res.render('index.ejs', {quotes: result});
-    		})
+    app.get('/filters', (req, res) => {
+
+        getFilters((err, data) => {
+            if (err) {
+                return errCallback(res, err);
+            } else {
+                return successCallback(res, data);
+            }
+        });
     });
 
     app.post('/filters', (req, res) => {
-        console.log("saved this to mongo",req.body, typeof req.body);
 
-        var data = {
-            _id: uuid(req.body.user||null, NAMESPACE),
-            filters: req.body
-        };
-        console.log("data", data)
-    	db.collection('filters').save(data, (err,
-    		result) => {
-    		if (err) {
-                res.status(500).end({message:"Error occurred",err:err});
+        getFilters((err, data) => {
+            if (err) {
+                return errCallback(res, err);
             } else {
-                res.status(200).send({message: "Saved successfully", result: result})
-            }
 
-            });
+                req.body.blockList = req.body.blockList || "[]";
+                var joinedFilters = lodash.union(data.filters, JSON.parse(req.body.blockList));
+
+                var _data = {
+                    _id: uuid(req.body.user||null, NAMESPACE),
+                    filters: joinedFilters,
+                    username: req.body.user
+                };
+                //merge data object before saving
+                updateFilters((err, data) => {
+                    if (err) {
+                        return errCallback(res, err);
+                    } else {
+                        return successCallback(res, data);
+                    }
+                }, data);
+            }
+        });
     });
+
+    function updateFilters(cb, data) {
+
+        db.collection('filters').save(data, (err, result) => {
+            //get latest state in case concurrent update happening elsewhere
+            return getFilters(cb);
+        });
+    }
+
+    function getFilters(cb) {
+        //get filters
+        db.collection('filters').toArray((err, data) => {
+            cb(err, data);
+        });
+    }
 
     app.listen(3330, () => console.log('Example app listening on port 3330!'));
 
