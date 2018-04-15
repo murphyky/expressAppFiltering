@@ -59,7 +59,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
                 if (req.body.scheduleToDelete) {
                     var scheduleToDelete = JSON.parse(req.body.scheduleToDelete);
-                    data.filters = _.filter(data.filters, function(item) {
+                    data.filters = lodash.filter(data.filters, function(item) {
                         return scheduleToDelete.indexOf(item) === -1;
                     });
                 }
