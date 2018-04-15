@@ -70,7 +70,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     });
 
     function updateFilters(cb, data) {
-
+        console.log("Updating filters...", data);
         db.collection('filters').save(data, (err, result) => {
             //get latest state in case concurrent update happening elsewhere
             return getFilters(cb);
@@ -80,6 +80,7 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
     function getFilters(cb) {
         //get filters
         db.collection('filters').find().toArray((err, data) => {
+            console.log("Getting latest filter collection...", data)
             cb(err, data);
         });
     }
