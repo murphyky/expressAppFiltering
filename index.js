@@ -65,13 +65,13 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
                 };
                 console.log("merged payload", mergedPayload);
                 //merge data object before saving
-                updateFilters((err, mergedPayload) => {
+                updateFilters((err, resolvedData) => {
                     if (err) {
                         return errCallback(res, err);
                     } else {
-                        return successCallback(res, data);
+                        return successCallback(res, resolvedData);
                     }
-                }, data);
+                }, mergedPayload);
             }
         });
     });
