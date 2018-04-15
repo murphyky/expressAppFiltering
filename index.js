@@ -88,10 +88,11 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
     function getFilters(id, cb) {
         //get filters
-        db.collection('filters').findOne({_id: id}), ((err, data) => {
-            console.log("Getting latest filter collection...", data)
-            cb(err, data);
-        });
+
+        var data = db.collection('filters').findOne({_id:id});
+        console.log("Getting latest filter collection...", data)
+        db(err, data);
+
     }
 
     app.listen(3330, () => console.log('Example app listening on port 3330!'));
