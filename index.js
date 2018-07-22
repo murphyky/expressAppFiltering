@@ -6,6 +6,7 @@ const cors = require('cors');
 const uuid = require('uuid/v5');
 const NAMESPACE = "9f264d74-96cd-46e3-9547-9618fc3ac247";
 const lodash = require('lodash');
+require('dotenv').config()
 
 MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+process.env.hostname+':'+process.env.port+'/', (err,
     client) => {
