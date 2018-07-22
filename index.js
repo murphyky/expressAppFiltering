@@ -7,13 +7,13 @@ const uuid = require('uuid/v5');
 const NAMESPACE = "9f264d74-96cd-46e3-9547-9618fc3ac247";
 const lodash = require('lodash');
 
-MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
+MongoClient.connect('mongodb://filterUser:km890889@localhost:27017/', (err,
     client) => {
 
 	if (err) 
 		return console.log(err);
 
-	db = client.db('reseteraFilters');
+	db = client.db('filters');
 
     app.use(cors())
 
@@ -46,31 +46,25 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
 
     app.post('/filters', (req, res) => {
 
-        var id = uuid(req.body.user||null, NAMESPACE);
+        var userName = req.body.user;
 
         getFilters(id, (err, data) => {
             if (err) {
                 return errCallback(res, err);
             } else {
 
-                data.filters = data.filters || [];
-
+                //filters are array where elements are filter-value and userId
                 req.body.blockList = req.body.blockList || "[]";
+                req.body.unblockList = req.body.unblockList || "[]";
+                var createDate = req.body.createDate ? new Date(req.body.createDate) : new Date();
 
-                if (req.body.scheduleToDelete) {
-                    var scheduleToDelete = JSON.parse(req.body.scheduleToDelete);
-                    data.filters = lodash.filter(data.filters, function(item) {
-                        return scheduleToDelete.indexOf(item) === -1;
-                    });
-                }
-
-                var joinedFilters = lodash.union(data.filters, JSON.parse(req.body.blockList));
-
-                var mergedPayload = {
-                    _id: id,
-                    filters: joinedFilters,
-                    username: req.body.user
+                var payload = {
+                    userName: userName,
+                    blockList: JSON.parse(req.body.blockList),
+                    unblockList: JSON.parse(req.body.unblockList),
+                    createDate: createDate
                 };
+
                 //merge data object before saving
                 updateFilters((err, resolvedData) => {
                     if (err) {
@@ -78,26 +72,58 @@ MongoClient.connect('mongodb://resFilterUser:km890889@localhost:27017/', (err,
                     } else {
                         return successCallback(res, resolvedData);
                     }
-                }, mergedPayload);
+                }, payload);
             }
         });
     });
 
+
+    /*****
+    {
+        data: {
+            username: String,
+            blockList: Array: [{value: String, created: Date}],
+            unblockList: Array: [{value: String, created: Date}]
+        }
+    }
+    *****/
     function updateFilters(cb, data) {
         console.log("Updating filters...", data);
-        db.collection('filters').save(data, (err, result) => {
-            //get latest state in case concurrent update happening elsewhere
-            return getFilters(data._id, cb);
+
+        db.collections.remove({"username": data.username, "filters": {
+            "$and": [{
+                "$in": data.unblockList
+            }, {
+                "created": {
+                    "$lt": data.createDate
+                }
+            }]
+        }} (err, responseData) => {
+
+            data.blockList.forEach(function(datum){
+                datum._id = uuid(datum.value||null, NAMESPACE);
+            });
+
+            db.collection('filters').update({"username": data.username, 
+                "$addToSet": {
+                    "filters": {"$each": data.blockList}
+                }
+            }, (err, result) => {
+                //get latest state in case concurrent update happening elsewhere
+                return getFilters(data.username, cb);
+            })
         });
+
     }
 
-    function getFilters(id, cb) {
+    function getFilters(userName, cb) {
         //get filters
-
-        db.collection("filters").findOne({_id: id})
-        .then(function(data) {
-            console.log("Getting latest filter collection...", data)
+        return db.collection("filters").find({users: userName})
+        .then(function(data){
+            console.log("Getting latest filter collection...", data);
             cb(err, data);
+        }, function(err){
+            cb(err, null);
         });
     }
 
