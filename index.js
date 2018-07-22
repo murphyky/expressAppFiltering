@@ -95,7 +95,7 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
     	var unblockList = data.unblockList;
     	var createDate = data.createDate;
 
-        db.collections.remove({"username": username, "filters": {
+        db.collections("filters").remove({"username": username, "filters": {
             "$and": [{
                 "$in": unblockList
             }, {
