@@ -123,12 +123,9 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
 
     function getFilters(username, cb) {
         //get filters
-        return db.collection("filters").find({username: username})
-        .then(function(data){
+        return db.collection("filters").find({username: username},(err, data) => {
             console.log("Getting latest filter collection...", data);
-            cb(err, data);
-        }, function(err){
-            cb(err, null);
+            cb(err, data);            
         });
     }
 
