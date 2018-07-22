@@ -90,28 +90,32 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
     *****/
     function updateFilters(cb, data) {
         console.log("Updating filters...", data);
+	var username = data.username;
+	var blockList = data.blockList;
+	var unblockList = data.unblockList;
+	var createDate = data.createDate;
 
-        db.collections.remove({"username": data.username, "filters": {
+        db.collections.remove({"username": username, "filters": {
             "$and": [{
-                "$in": data.unblockList
+                "$in": unblockList
             }, {
                 "created": {
-                    "$lt": data.createDate
+                    "$lt": createDate
                 }
             }]
-        }} (err, responseData) => {
+        }}, (err, responseData) => {
 
             data.blockList.forEach(function(datum){
                 datum._id = uuid(datum.value||null, NAMESPACE);
             });
 
-            db.collection('filters').update({"username": data.username, 
+            db.collection('filters').update({"username": username, 
                 "$addToSet": {
-                    "filters": {"$each": data.blockList}
+                    "filters": {"$each": blockList}
                 }
             }, (err, result) => {
                 //get latest state in case concurrent update happening elsewhere
-                return getFilters(data.username, cb);
+                return getFilters(username, cb);
             })
         });
 
