@@ -47,9 +47,9 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
 
     app.post('/filters', (req, res) => {
 
-        var userName = req.body.user;
+        var username = req.body.user;
 
-        getFilters(id, (err, data) => {
+        getFilters(username, (err, data) => {
             if (err) {
                 return errCallback(res, err);
             } else {
@@ -60,7 +60,7 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
                 var createDate = req.body.createDate ? new Date(req.body.createDate) : new Date();
 
                 var payload = {
-                    userName: userName,
+                    username: username,
                     blockList: JSON.parse(req.body.blockList),
                     unblockList: JSON.parse(req.body.unblockList),
                     createDate: createDate
@@ -90,10 +90,10 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
     *****/
     function updateFilters(cb, data) {
         console.log("Updating filters...", data);
-	var username = data.username;
-	var blockList = data.blockList;
-	var unblockList = data.unblockList;
-	var createDate = data.createDate;
+    	var username = data.username;
+    	var blockList = data.blockList;
+    	var unblockList = data.unblockList;
+    	var createDate = data.createDate;
 
         db.collections.remove({"username": username, "filters": {
             "$and": [{
@@ -121,9 +121,9 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
 
     }
 
-    function getFilters(userName, cb) {
+    function getFilters(username, cb) {
         //get filters
-        return db.collection("filters").find({users: userName})
+        return db.collection("filters").find({username: username})
         .then(function(data){
             console.log("Getting latest filter collection...", data);
             cb(err, data);
