@@ -103,7 +103,7 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
         db.collection('filters').findOne({"username": username}, (err, result) => {
             if (result) {
 
-                db.collection("filters").remove({"username": username, "filters": {
+                db.collection("filters").remove({"username": username}, {"filters": {
                     "$and": [{
                         "$in": unblockList
                     }, {
@@ -113,7 +113,7 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
                     }]
                 }}, (err, responseData) => {
 
-                    db.collection('filters').update({"username": username, 
+                    db.collection('filters').update({"username": username}, { 
                         "$addToSet": {
                             "filters": {"$each": blockList}
                         }
