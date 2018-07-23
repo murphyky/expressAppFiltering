@@ -105,9 +105,11 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
             }]
         }}, (err, responseData) => {
 
-            data.blockList.forEach(function(datum){
+            blockList.forEach(function(datum){
                 datum._id = uuid(datum.value||null, NAMESPACE);
             });
+
+            console.warn("Blocking these", blockList)
 
             db.collection('filters').update({"username": username, 
                 "$addToSet": {
