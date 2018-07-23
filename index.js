@@ -28,6 +28,7 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
     }
 
     function successCallback(res, data) {
+
         return res.status(200).send({message: "Saved successfully",
             data: data});
     }
@@ -102,7 +103,6 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
         db.collection('filters').findOne({"username": username}, (err, result) => {
             if (result) {
 
-
                 db.collection("filters").remove({"username": username, "filters": {
                     "$and": [{
                         "$in": unblockList
@@ -136,7 +136,7 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
 
     function getFilters(username, cb) {
         //get filters
-        return db.collection("filters").find({username: username},(err, data) => {
+        return db.collection("filters").findOne({username: username},(err, data) => {
             console.log("Getting latest filter collection...", data);
             cb(err, data);            
         });
