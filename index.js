@@ -95,32 +95,43 @@ MongoClient.connect('mongodb://'+process.env.user+':'+process.env.pass+'@'+proce
     	var unblockList = data.unblockList;
     	var createDate = data.createDate;
 
-        db.collection("filters").remove({"username": username, "filters": {
-            "$and": [{
-                "$in": unblockList
-            }, {
-                "created": {
-                    "$lt": createDate
-                }
-            }]
-        }}, (err, responseData) => {
-
-            blockList.forEach(function(datum){
-                datum._id = uuid(datum.value||null, NAMESPACE);
-            });
-
-            console.warn("Blocking these", blockList)
-
-            db.collection('filters').update({"username": username, 
-                "$addToSet": {
-                    "filters": {"$each": blockList}
-                }
-            }, (err, result) => {
-                //get latest state in case concurrent update happening elsewhere
-                return getFilters(username, cb);
-            })
+        blockList.forEach(function(datum){
+            datum._id = uuid(datum.value||null, NAMESPACE);
         });
 
+        db.collection('filters').findOne({"username": username}, (err, result) => {
+            if (result) {
+
+
+                db.collection("filters").remove({"username": username, "filters": {
+                    "$and": [{
+                        "$in": unblockList
+                    }, {
+                        "created": {
+                            "$lt": createDate
+                        }
+                    }]
+                }}, (err, responseData) => {
+
+                    db.collection('filters').update({"username": username, 
+                        "$addToSet": {
+                            "filters": {"$each": blockList}
+                        }
+                    }, (err, result) => {
+                        //get latest state in case concurrent update happening elsewhere
+                        return getFilters(username, cb);
+                    });
+
+                });
+            } else {
+                db.collection('filters').insert({
+                    "username": username,
+                    "filters": blockList
+                }, (err, result) => {
+                    return getFilters(username, cb);
+                });
+            }
+        });
     }
 
     function getFilters(username, cb) {
